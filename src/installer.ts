@@ -12,11 +12,11 @@ export class Installer {
         if (!version) {
             return null;
         }
-        let url;
+        let url = '';
         if (validUrl.isWebUri(version)) {
             url = version;
         } else {
-            url = Installer.getOcBundleUrl(version, runnerOS);
+            url = await Installer.getOcBundleUrl(version, runnerOS);
         }
         
         if (!url) {
@@ -81,7 +81,7 @@ export class Installer {
     }
 
     static async getOcBundleUrl(version: string, runnerOS: string) {
-        let url: string = '';
+        let url = '';
         if (version === 'latest') {
             url = await Installer.latest(version);
         }
@@ -98,23 +98,23 @@ export class Installer {
         const ocUtils = await Installer.getOcUtils();
         if (vMajor === 3) {
             url = `${ocUtils.openshiftV3BaseUrl}/${version}/`;
-          } else if (vMajor === 4) {
+        } else if (vMajor === 4) {
             url = `${ocUtils.openshiftV4BaseUrl}/${version}/`;
-          } else {
+        } else {
             core.debug('Invalid version');
             return null;
-          }
+        }
 
-          const bundle = await Installer.getOcBundleByOS(runnerOS);
-          if (!bundle) {
+        const bundle = await Installer.getOcBundleByOS(runnerOS);
+        if (!bundle) {
             core.debug('Unable to find bundle url');
             return null;
-          }
-      
-          url += bundle;
-      
-          core.debug(`archive URL: ${url}`);
-          return url;
+        }
+    
+        url += bundle;
+    
+        core.debug(`archive URL: ${url}`);
+        return url;
     }
 
     static async latest(runnerOS: string) {
