@@ -40,7 +40,9 @@ export class Installer {
             return null;
         }
         const downloadDir = await Installer.getDownloadDir(runnerOS);
+        core.debug(`download directory: ${downloadDir}`);
         const ocArchive = await tc.downloadTool(url);
+        core.debug(`ocArchive: ${ocArchive}`);
         let ocBinary: string;
         if (runnerOS === 'win32') {
             await tc.extractZip(ocArchive, downloadDir);
@@ -49,7 +51,7 @@ export class Installer {
             await tc.extractTar(ocArchive, downloadDir);
             ocBinary = path.join(downloadDir, 'oc');
         }
-
+        core.debug(`ocBinary: ${ocBinary}`);
         if (!await ioUtil.exists(ocBinary)) {
             return null;
         } else {
