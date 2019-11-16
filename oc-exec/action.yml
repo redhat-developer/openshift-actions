@@ -5,6 +5,12 @@ inputs:
   version:
     description: 'Choose the oc version you want to use to execute the command. It can be a version or an url where to download oc cli desired. If left blank latest oc cli will be used.'
     default: 'latest'
+  openshift_server_url:
+    description: 'The URL of the Openshift cluster'
+  parameters:
+    description: 'JSON with values to connect to the Openshift cluster'
+  args:
+    description: 'Oc command to be executed'
 runs:
   using: 'node12'
   main: 'lib/ocExec.js'
