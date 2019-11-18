@@ -82,7 +82,7 @@ export class Installer {
     static async getOcBundleUrl(version: string, runnerOS: string) {
         let url = '';
         if (version === 'latest') {
-            url = await Installer.latest(version);
+            url = await Installer.latest(runnerOS);
             return url;
         }
 
