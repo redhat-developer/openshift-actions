@@ -157,7 +157,8 @@ export class Installer {
     }
 
     static async getOcUtils() {
-        const rawData = await fs.readFile('../oc-utils.json');
+        const workspace = process.env['GITHUB_WORKSPACE'] || '';
+        const rawData = await fs.readFile(path.join(workspace, 'oc-utils.json'));
         return JSON.parse(rawData);
     }
 }
