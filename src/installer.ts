@@ -83,6 +83,7 @@ export class Installer {
         let url = '';
         if (version === 'latest') {
             url = await Installer.latest(version);
+            return url;
         }
 
         // determine the base_url based on version
