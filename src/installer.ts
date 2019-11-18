@@ -39,19 +39,16 @@ export class Installer {
         if (!url) {
             return null;
         }
-        const downloadDir = await Installer.getDownloadDir(runnerOS);
-        core.debug(`download directory: ${downloadDir}`);
-        const ocArchive = await tc.downloadTool(url);
-        core.debug(`ocArchive: ${ocArchive}`);
+        const downloadDir = await Installer.getDownloadDir(runnerOS);        
+        const pathOcArchive = await tc.downloadTool(url);
         let ocBinary: string;
         if (runnerOS === 'win32') {
-            await tc.extractZip(ocArchive, downloadDir);
+            await tc.extractZip(pathOcArchive, downloadDir);
             ocBinary = path.join(downloadDir, 'oc.exe');
         } else {
-            await tc.extractTar(ocArchive, downloadDir);
+            await tc.extractTar(pathOcArchive, downloadDir);
             ocBinary = path.join(downloadDir, 'oc');
-        }
-        core.debug(`ocBinary: ${ocBinary}`);
+        }        
         if (!await ioUtil.exists(ocBinary)) {
             return null;
         } else {
