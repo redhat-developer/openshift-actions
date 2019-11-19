@@ -18,6 +18,7 @@ export class Installer {
         } else {
             url = await Installer.getOcBundleUrl(version, runnerOS);
         }
+        var b = '';
         
         if (!url) {
             return Promise.reject('Unable to determine oc download URL.');
