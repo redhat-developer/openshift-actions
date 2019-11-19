@@ -14,6 +14,8 @@ async function run() {
     core.debug(runnerOS);
     core.debug(process.env['RUNNER_TEMP']);
 
+    const cmds = args.split('\n');
+
     let ocPath = await Installer.installOc(version, runnerOS);
     if (ocPath === null) {
         throw new Error('no oc binary found');
@@ -21,7 +23,9 @@ async function run() {
 
     const endpoint: OpenShiftEndpoint = await OcAuth.initOpenShiftEndpoint(openShiftUrl, parameters);
     await OcAuth.createKubeConfig(endpoint, ocPath, runnerOS);
-    await Command.execute(ocPath, args);    
+    for (const cmd of cmds) {
+        await Command.execute(ocPath, cmd);
+    }  
 }
 
 run().catch(core.setFailed);
