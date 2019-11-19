@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
-import { Installer } from './installer';
-import { Command } from './command';
 import { OcAuth, OpenShiftEndpoint } from './auth';
+import { Command } from './command';
+import { Installer } from './installer';
 
-async function run() {
+async function run(): Promise<void> {
     const openShiftUrl = core.getInput('openshift_server_url');
     const parameters = core.getInput('parameters');
     const version = core.getInput('version');
@@ -16,16 +16,16 @@ async function run() {
 
     const cmds = args.split('\n');
 
-    let ocPath = await Installer.installOc(version, runnerOS);
+    const ocPath = await Installer.installOc(version, runnerOS);
     if (ocPath === null) {
         throw new Error('no oc binary found');
     }
 
     const endpoint: OpenShiftEndpoint = await OcAuth.initOpenShiftEndpoint(openShiftUrl, parameters);
-    await OcAuth.createKubeConfig(endpoint, ocPath, runnerOS);
+    await OcAuth.createKubeConfig(endpoint, ocPath);
     for (const cmd of cmds) {
         await Command.execute(ocPath, cmd);
-    }  
+    }
 }
 
 run().catch(core.setFailed);

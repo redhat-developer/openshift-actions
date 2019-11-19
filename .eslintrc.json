@@ -8,6 +8,10 @@
         "ecmaVersion":  2018,  // Allows for the parsing of modern ECMAScript features
         "sourceType":  "module"  // Allows for the use of imports
     },
+    "globals": {
+        "Promise": "readonly",
+        "process": "readonly"
+    },
     "rules": {
         "arrow-parens": [
             1,
@@ -28,7 +32,8 @@
         ],
         "indent": [
             1,
-            4
+            4,
+            { "SwitchCase": 1 }
         ],
         "interface-name": 0,
         "member-ordering": 0,
@@ -58,7 +63,10 @@
         ],
         "object-literal-shorthand": 0,
         "object-literal-sort-keys": 0,
-        "one-var": 1,
+        "one-var": [ 
+            1,
+            "never"
+        ],
         "sort-imports": 1,
         "prefer-const": 1,
         "prefer-template": 1,

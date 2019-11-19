@@ -1,14 +1,13 @@
 import * as core from '@actions/core';
-import * as io from '@actions/io';
 import * as ioUtil from '@actions/io/lib/io-util';
 import * as tc from '@actions/tool-cache';
+import { LATEST, LINUX, MACOSX, OC_TAR_GZ, OC_ZIP, WIN } from './constants';
 import * as fs from 'mz/fs';
 import * as path from 'path';
 import * as validUrl from 'valid-url';
-import { LINUX, MACOSX, WIN, OC_TAR_GZ, OC_ZIP, LATEST } from './constants';
 
 export class Installer {
-    static async installOc(version: string, runnerOS: string) {
+    static async installOc(version: string, runnerOS: string): Promise<string> {
         if (!version) {
             return null;
         }
@@ -18,14 +17,13 @@ export class Installer {
         } else {
             url = await Installer.getOcBundleUrl(version, runnerOS);
         }
-        var b = '';
-        
+
         if (!url) {
             return Promise.reject('Unable to determine oc download URL.');
         }
 
         core.debug(`downloading: ${url}`);
-        let ocBinary = await Installer.downloadAndExtract(
+        const ocBinary = await Installer.downloadAndExtract(
             url,
             runnerOS
         );
@@ -36,11 +34,11 @@ export class Installer {
         return ocBinary;
     }
 
-    static async downloadAndExtract(url: string, runnerOS: string) {
+    static async downloadAndExtract(url: string, runnerOS: string): Promise<string> {
         if (!url) {
             return null;
         }
-        let downloadDir = '';        
+        let downloadDir = '';
         const pathOcArchive = await tc.downloadTool(url);
         let ocBinary: string;
         if (runnerOS === 'Windows') {
@@ -49,7 +47,7 @@ export class Installer {
         } else {
             downloadDir = await tc.extractTar(pathOcArchive);
             ocBinary = path.join(downloadDir, 'oc');
-        }        
+        }
         if (!await ioUtil.exists(ocBinary)) {
             return null;
         } else {
@@ -58,7 +56,7 @@ export class Installer {
         }
     }
 
-    static async getOcBundleUrl(version: string, runnerOS: string) {
+    static async getOcBundleUrl(version: string, runnerOS: string): Promise<string> {
         let url = '';
         if (version === 'latest') {
             url = await Installer.latest(runnerOS);
@@ -66,7 +64,7 @@ export class Installer {
         }
 
         // determine the base_url based on version
-        let reg = new RegExp('\\d+(?=\\.)');
+        const reg = new RegExp('\\d+(?=\\.)');
         const vMajorRegEx: RegExpExecArray = reg.exec(version);
         if (!vMajorRegEx || vMajorRegEx.length === 0) {
             core.debug('Error retrieving version major');
@@ -89,53 +87,51 @@ export class Installer {
             core.debug('Unable to find bundle url');
             return null;
         }
-    
+
         url += bundle;
-    
+
         core.debug(`archive URL: ${url}`);
         return url;
     }
 
-    static async latest(runnerOS: string) {
+    static async latest(runnerOS: string): Promise<string> {
         const bundle = await Installer.getOcBundleByOS(runnerOS);
         if (!bundle) {
-          core.debug('Unable to find bundle url');
-          return null;
+            core.debug('Unable to find bundle url');
+            return null;
         }
-        
+
         const ocUtils = await Installer.getOcUtils();
         const url = `${ocUtils.openshiftV4BaseUrl}/${LATEST}/${bundle}`;
-    
+
         core.debug(`latest stable oc version: ${url}`);
         return url;
     }
 
     static async getOcBundleByOS(runnerOS: string): Promise<string | null> {
-        let url: string = '';
-    
+        let url = '';
         // determine the bundle path based on the OS type
         switch (runnerOS) {
-          case 'Linux': {
-            url += `${LINUX}/${OC_TAR_GZ}`;
-            break;
-          }
-          case 'macOS': {
-            url += `${MACOSX}/${OC_TAR_GZ}`;
-            break;
-          }
-          case 'Windows': {
-            url += `${WIN}/${OC_ZIP}`;
-            break;
-          }
-          default: {
-            return null;
-          }
+            case 'Linux': {
+                url += `${LINUX}/${OC_TAR_GZ}`;
+                break;
+            }
+            case 'macOS': {
+                url += `${MACOSX}/${OC_TAR_GZ}`;
+                break;
+            }
+            case 'Windows': {
+                url += `${WIN}/${OC_ZIP}`;
+                break;
+            }
+            default: {
+                return null;
+            }
         }
-    
         return url;
     }
 
-    static async getOcUtils() {
+    static async getOcUtils(): Promise<any> {
         const workspace = process.env['GITHUB_WORKSPACE'] || '';
         const rawData = await fs.readFile(path.join(workspace, 'oc-utils.json'));
         return JSON.parse(rawData);
