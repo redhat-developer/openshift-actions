@@ -42,7 +42,7 @@ export class Installer {
         const downloadDir = await Installer.getDownloadDir(runnerOS);        
         const pathOcArchive = await tc.downloadTool(url);
         let ocBinary: string;
-        if (runnerOS === 'win32') {
+        if (runnerOS === 'Windows') {
             await tc.extractZip(pathOcArchive, downloadDir);
             ocBinary = path.join(downloadDir, 'oc.exe');
         } else {
@@ -60,11 +60,11 @@ export class Installer {
     static async getDownloadDir(runnerOS: string) {
         let root = process.env['GITHUB_WORKSPACE'] || '';
         if (!root) {
-            if (runnerOS === 'win32') {
+            if (runnerOS === 'Windows') {
               // On windows use the USERPROFILE env variable
               root = process.env['USERPROFILE'] || 'C:\\';
             } else {
-              if (runnerOS === 'darwin') {
+              if (runnerOS === 'macOS') {
                 root = '/Users';
               } else {
                 root = '/home';
@@ -140,11 +140,11 @@ export class Installer {
             url += `${LINUX}/${OC_TAR_GZ}`;
             break;
           }
-          case 'Darwin': {
+          case 'macOS': {
             url += `${MACOSX}/${OC_TAR_GZ}`;
             break;
           }
-          case 'Windows_NT': {
+          case 'Windows': {
             url += `${WIN}/${OC_ZIP}`;
             break;
           }
