@@ -39,14 +39,14 @@ export class Installer {
         if (!url) {
             return null;
         }
-        const downloadDir = await Installer.getDownloadDir(runnerOS);        
+        let downloadDir = '';        
         const pathOcArchive = await tc.downloadTool(url);
         let ocBinary: string;
         if (runnerOS === 'Windows') {
-            await tc.extractZip(pathOcArchive, downloadDir);
+            downloadDir = await tc.extractZip(pathOcArchive);
             ocBinary = path.join(downloadDir, 'oc.exe');
         } else {
-            await tc.extractTar(pathOcArchive, downloadDir);
+            downloadDir = await tc.extractTar(pathOcArchive);
             ocBinary = path.join(downloadDir, 'oc');
         }        
         if (!await ioUtil.exists(ocBinary)) {
@@ -55,28 +55,6 @@ export class Installer {
             fs.chmodSync(ocBinary, '0755');
             return ocBinary;
         }
-    }
-
-    static async getDownloadDir(runnerOS: string) {
-        let root = process.env['GITHUB_WORKSPACE'] || '';
-        if (!root) {
-            if (runnerOS === 'Windows') {
-              // On windows use the USERPROFILE env variable
-              root = process.env['USERPROFILE'] || 'C:\\';
-            } else {
-              if (runnerOS === 'macOS') {
-                root = '/Users';
-              } else {
-                root = '/home';
-              }
-            }
-        }
-        const downloadDir = path.join(root, '.download');
-        
-        if (!await ioUtil.exists(downloadDir)) {
-            await io.mkdirP(downloadDir);
-        }
-        return downloadDir;
     }
 
     static async getOcBundleUrl(version: string, runnerOS: string) {
