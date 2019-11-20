@@ -14,6 +14,9 @@ async function run(): Promise<void> {
     core.debug(runnerOS);
     core.debug(process.env['RUNNER_TEMP']);
 
+    if (!args){
+        return Promise.reject('Invalid cmd input. Insert at least one command to be executed.');
+    }
     const cmds = args.split('\n');
 
     const ocPath = await Installer.installOc(version, runnerOS);
