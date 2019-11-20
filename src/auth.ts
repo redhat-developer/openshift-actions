@@ -51,18 +51,21 @@ export class OcAuth {
         // parameters:{"username":***,"password":***}, scheme:'UsernamePassword'
         // parameters:{"kubeconfig":***}, scheme:'None'
         const authType = endpoint.scheme;
-        const skip = OcAuth.skipTlsVerify(endpoint);
+        let useCertificateOrSkipTls = OcAuth.getCertificateAuthorityFile(endpoint);
+        if (useCertificateOrSkipTls === '') {
+            useCertificateOrSkipTls = OcAuth.skipTlsVerify(endpoint);
+        }
         switch (authType) {
             case BASIC_AUTHENTICATION:
                 const username = endpoint.parameters['username'];
                 const password = endpoint.parameters['password'];
                 await Command.execute(
                     ocPath,
-                    `login ${skip} -u ${username} -p ${password} ${endpoint.serverUrl}`
+                    `login ${useCertificateOrSkipTls} -u ${username} -p ${password} ${endpoint.serverUrl}`
                 );
                 break;
             case TOKEN_AUTHENTICATION:
-                const args = `login ${skip} --token ${endpoint.parameters['apitoken']} ${endpoint.serverUrl}`;
+                const args = `login ${useCertificateOrSkipTls} --token ${endpoint.parameters['apitoken']} ${endpoint.serverUrl}`;
                 await Command.execute(ocPath, args);
                 break;
             case NO_AUTHENTICATION:
@@ -74,8 +77,19 @@ export class OcAuth {
 
     }
 
+    static getCertificateAuthorityFile(endpoint: OpenShiftEndpoint): string {
+        let certificateFile = '';
+        if (endpoint.parameters['certificateAuthorityFile']) {
+            certificateFile = `--certificate-authority=${endpoint.parameters['certificateAuthorityFile']}`;
+        }
+        return certificateFile;
+    }
+
     static skipTlsVerify(endpoint: OpenShiftEndpoint): string {
-        const skipTlsVerify = '';
+        let skipTlsVerify = '';
+        if (endpoint.parameters['acceptUntrustedCerts'] === 'true') {
+            skipTlsVerify = '--insecure-skip-tls-verify';
+        }
         return skipTlsVerify;
     }
 }
