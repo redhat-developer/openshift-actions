@@ -21,7 +21,10 @@
             1, 
             { "code": 200 }
         ],
-        "object-shorthand": 1,
+        "object-shorthand": [
+            1,
+            "consistent"
+        ],
         "spaced-comment": [
             1,
             "always"
