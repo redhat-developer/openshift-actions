@@ -100,7 +100,6 @@
             "smart"
         ],
         "use-isnan": 1,
-        "camelcase": 1,
-        "no-irregular-whitespace": 1
+        "camelcase": 1
     }
 }
