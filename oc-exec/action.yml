@@ -9,7 +9,7 @@ inputs:
     description: 'The URL of the Openshift cluster'
   parameters:
     description: 'JSON with values to connect to the Openshift cluster'
-  args:
+  cmd:
     description: 'Oc command to be executed'
 runs:
   using: 'node12'
