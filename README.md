@@ -28,7 +28,7 @@ It uses username and password to connect to the cluster.
 
 The parameters input must be in form `parameters: '{"username": "${{ secrets.USERNAME }}", "password": "${{ secrets.PASSWORD }}", "acceptUntrustedCerts": "true"}'`
 
-#### Basic Authentication
+#### Token Authentication
 
 It uses an API token to connect to the cluster. 
 

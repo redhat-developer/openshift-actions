@@ -18,25 +18,16 @@ export class Installer {
             url = await Installer.getOcBundleUrl(version, runnerOS);
         }
 
-        if (!url) {
-            return Promise.reject('Unable to determine oc download URL.');
-        }
-
         core.debug(`downloading: ${url}`);
-        const ocBinary = await Installer.downloadAndExtract(
+        return await Installer.downloadAndExtract(
             url,
             runnerOS
         );
-        if (!ocBinary) {
-            return Promise.reject('Unable to download or extract oc binary.');
-        }
-
-        return ocBinary;
     }
 
     static async downloadAndExtract(url: string, runnerOS: string): Promise<string> {
         if (!url) {
-            return null;
+            return Promise.reject('Unable to determine oc download URL.');
         }
         let downloadDir = '';
         const pathOcArchive = await tc.downloadTool(url);
@@ -49,7 +40,7 @@ export class Installer {
             ocBinary = path.join(downloadDir, 'oc');
         }
         if (!await ioUtil.exists(ocBinary)) {
-            return null;
+            return Promise.reject('Unable to download or extract oc binary.');
         } else {
             fs.chmodSync(ocBinary, '0755');
             return ocBinary;

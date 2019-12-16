@@ -14,12 +14,12 @@ export interface OpenShiftEndpoint {
 }
 
 export class OcAuth {
-    static async initOpenShiftEndpoint(openShiftServer: string, parameters: string): Promise<OpenShiftEndpoint> {
+    static initOpenShiftEndpoint(openShiftServer: string, parameters: string): OpenShiftEndpoint {
         if (!openShiftServer) {
-            return Promise.reject('Invalid Openshift cluster URL.');
+            throw new Error('Invalid Openshift cluster URL.');
         }
         if (!parameters) {
-            return Promise.reject('Invalid parameters workflow input.');
+            throw new Error('Invalid parameters workflow input.');
         }
 
         const paramsJSON: { [key: string]: string } = JSON.parse(parameters);
@@ -29,7 +29,7 @@ export class OcAuth {
         } else if (paramsJSON['apitoken']) {
             scheme = TOKEN_AUTHENTICATION;
         } else {
-            return Promise.reject('There are no sufficient parameters to authenticate to an Openshift cluster.');
+            throw new Error('There are no sufficient parameters to authenticate to an Openshift cluster.');
         }
 
         return {
@@ -39,7 +39,7 @@ export class OcAuth {
         } as OpenShiftEndpoint;
     }
 
-    static async createKubeConfig(endpoint: OpenShiftEndpoint, ocPath: string): Promise<void> {
+    static async loginOpenshift(endpoint: OpenShiftEndpoint, ocPath: string): Promise<void> {
         if (!endpoint) {
             core.debug('Null endpoint is not allowed');
             return Promise.reject('Endpoint is not valid');

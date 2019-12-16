@@ -24,8 +24,8 @@ async function run(): Promise<void> {
         throw new Error('no oc binary found');
     }
 
-    const endpoint: OpenShiftEndpoint = await OcAuth.initOpenShiftEndpoint(openShiftUrl, parameters);
-    await OcAuth.createKubeConfig(endpoint, ocPath);
+    const endpoint: OpenShiftEndpoint = OcAuth.initOpenShiftEndpoint(openShiftUrl, parameters);
+    await OcAuth.loginOpenshift(endpoint, ocPath);
     for (const cmd of cmds) {
         await Command.execute(ocPath, cmd);
     }
