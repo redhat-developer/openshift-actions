@@ -8,6 +8,7 @@
     "eslint": "node ./node_modules/eslint/bin/eslint.js . --ext .ts",
     "build": "npm run eslint && npm run compile",
     "test": "npm run clean && npm run compile && node ./lib/test/unit-tests.js",
+    "coverage:upload": "codecov -f coverage/coverage-final.json",
     "production": "npm clean-install --production"
   },
   "repository": {
