@@ -35,7 +35,7 @@ suite('Installer', () => {
         });
 
         test('check if getOcBundleUrl called if version is not URL', async () => {
-            const getOcBundleStub = sandbox.stub(Installer, 'getOcBundleUrl').resolves('url');
+            const getOcBundleStub = sandbox.stub(Installer, 'getOcBundleUrl').returns('url');
             sandbox.stub(Installer, 'downloadAndExtract').resolves('ocbinary');
             await Installer.installOc('3.11', 'OS');
             expect(getOcBundleStub).calledOnceWith('3.11', 'OS');
@@ -43,14 +43,14 @@ suite('Installer', () => {
 
         test('check if getOcBundleUrl NOT called if version is not URL', async () => {
             sandbox.stub(validUrl, 'isWebUri').returns(true);
-            const getOcBundleStub = sandbox.stub(Installer, 'getOcBundleUrl').resolves('url');
+            const getOcBundleStub = sandbox.stub(Installer, 'getOcBundleUrl').returns('url');
             sandbox.stub(Installer, 'downloadAndExtract').resolves('ocbinary');
             await Installer.installOc('url', 'OS');
             expect(getOcBundleStub).not.called;
         });
 
         test('check if correct oc binary path is returned', async () => {
-            sandbox.stub(Installer, 'getOcBundleUrl').resolves('url');
+            sandbox.stub(Installer, 'getOcBundleUrl').returns('url');
             const downloadExtractStub = sandbox.stub(Installer, 'downloadAndExtract').resolves('ocbinary');
             const res = await Installer.installOc('3.11', 'OS');
             expect(downloadExtractStub).calledOnceWith('url', 'OS');
@@ -128,41 +128,41 @@ suite('Installer', () => {
         };
 
         test('check if latest url returned if request latest oc version', async () => {
-            const latestStub = sandbox.stub(Installer, 'latest').resolves('urllatest');
-            const res = await Installer.getOcBundleUrl('latest', 'OS');
+            const latestStub = sandbox.stub(Installer, 'latest').returns('urllatest');
+            const res = Installer.getOcBundleUrl('latest', 'OS');
             expect(latestStub).calledOnceWith('OS');
             expect(res).equals('urllatest');
         });
 
         test('return null if version is not in valid format', async () => {
-            const res = await Installer.getOcBundleUrl('invalidversion', 'OS');
+            const res = Installer.getOcBundleUrl('invalidversion', 'OS');
             expect(res).equals(null);
         });
 
         test('check if valid url is returned if major version is 3', async () => {
-            sandbox.stub(Installer, 'getOcUtils').resolves(ocUtils);
-            sandbox.stub(Installer, 'getOcBundleByOS').resolves('ocbundle');
-            const res = await Installer.getOcBundleUrl('3.11', 'OS');
+            sandbox.stub(Installer, 'getOcUtils').returns(ocUtils);
+            sandbox.stub(Installer, 'getOcBundleByOS').returns('ocbundle');
+            const res = Installer.getOcBundleUrl('3.11', 'OS');
             expect(res).equals('urlv3/3.11/ocbundle');
         });
 
         test('check if valid url is returned if major version is 4', async () => {
-            sandbox.stub(Installer, 'getOcUtils').resolves(ocUtils);
-            sandbox.stub(Installer, 'getOcBundleByOS').resolves('ocbundle');
-            const res = await Installer.getOcBundleUrl('4.1', 'OS');
+            sandbox.stub(Installer, 'getOcUtils').returns(ocUtils);
+            sandbox.stub(Installer, 'getOcBundleByOS').returns('ocbundle');
+            const res = Installer.getOcBundleUrl('4.1', 'OS');
             expect(res).equals('urlv4/4.1/ocbundle');
         });
 
         test('null if major version is neither 3 nor 4', async () => {
-            sandbox.stub(Installer, 'getOcUtils').resolves(ocUtils);
-            const res = await Installer.getOcBundleUrl('2.1', 'OS');
+            sandbox.stub(Installer, 'getOcUtils').returns(ocUtils);
+            const res = Installer.getOcBundleUrl('2.1', 'OS');
             expect(res).equals(null);
         });
 
         test('null if unable to find oc bundle url', async () => {
-            sandbox.stub(Installer, 'getOcUtils').resolves(ocUtils);
-            const ocBundleStub = sandbox.stub(Installer, 'getOcBundleByOS').resolves(null);
-            const res = await Installer.getOcBundleUrl('4.1', 'OS');
+            sandbox.stub(Installer, 'getOcUtils').returns(ocUtils);
+            const ocBundleStub = sandbox.stub(Installer, 'getOcBundleByOS').returns(null);
+            const res = Installer.getOcBundleUrl('4.1', 'OS');
             expect(ocBundleStub).calledOnceWith('OS');
             expect(res).equals(null);
         });
@@ -170,60 +170,48 @@ suite('Installer', () => {
 
     suite('latest', () => {
         test('returns null if oc bundle url not found', async () => {
-            sandbox.stub(Installer, 'getOcBundleByOS').resolves(null);
-            const res = await Installer.latest('OS');
+            sandbox.stub(Installer, 'getOcBundleByOS').returns(null);
+            const res = Installer.latest('OS');
             expect(res).equals(null);
         });
 
         test('check if latest oc version is returned if bundle url is found', async () => {
-            const ocUtils = {
-                'openshiftV3BaseUrl': 'urlv3',
-                'openshiftV4BaseUrl': 'urlv4'
-            };
-            const ocBundleStub = sandbox.stub(Installer, 'getOcBundleByOS').resolves('ocbundle');
-            sandbox.stub(Installer, 'getOcUtils').resolves(ocUtils);
-            const res = await Installer.latest('OS');
+            const ocBundleStub = sandbox.stub(Installer, 'getOcBundleByOS').returns('ocbundle');
+            const res = Installer.latest('OS');
             expect(ocBundleStub).calledOnceWith('OS');
-            expect(res).equals('urlv4/latest/ocbundle');
+            expect(res).equals('https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/ocbundle');
         });
     });
 
     suite('getOcBundleByOS', () => {
         test('check if correct url is returned if OS is Windows', async () => {
-            const res = await Installer.getOcBundleByOS('Windows');
+            const res = Installer.getOcBundleByOS('Windows');
             expect(res).equals('windows/oc.zip');
         });
 
         test('check if correct url is returned if OS is Linux', async () => {
-            const res = await Installer.getOcBundleByOS('Linux');
+            const res = Installer.getOcBundleByOS('Linux');
             expect(res).equals('linux/oc.tar.gz');
         });
 
         test('check if correct url is returned if OS is MacOS', async () => {
-            const res = await Installer.getOcBundleByOS('macOS');
+            const res = Installer.getOcBundleByOS('macOS');
             expect(res).equals('macosx/oc.tar.gz');
         });
 
         test('returns null with invalid OS', async () => {
-            const res = await Installer.getOcBundleByOS('OS');
+            const res = Installer.getOcBundleByOS('OS');
             expect(res).equals(null);
         });
     });
 
     suite('getOcUtils', () => {
         test('check if readfile is called with right params', async () => {
-            const ocUtils = `{
-                "openshiftV3BaseUrl": "urlv3",
-                "openshiftV4BaseUrl": "urlv4"
-            }`;
             const ocUtilsJSON = {
-                openshiftV3BaseUrl: 'urlv3',
-                openshiftV4BaseUrl: 'urlv4'
+                openshiftV3BaseUrl: 'https://mirror.openshift.com/pub/openshift-v3/clients',
+                openshiftV4BaseUrl: 'https://mirror.openshift.com/pub/openshift-v4/clients/oc'
             };
-            process.env.GITHUB_WORKSPACE = 'path';
-            const readFileStub = sandbox.stub(fs, 'readFile').resolves(ocUtils);
-            const res = await Installer.getOcUtils();
-            expect(readFileStub).calledOnceWith('path/oc-utils.json');
+            const res = Installer.getOcUtils();
             expect(res).deep.equals(ocUtilsJSON);
         });
     });

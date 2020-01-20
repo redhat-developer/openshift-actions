@@ -15,7 +15,7 @@ export class Installer {
         if (validUrl.isWebUri(version)) {
             url = version;
         } else {
-            url = await Installer.getOcBundleUrl(version, runnerOS);
+            url = Installer.getOcBundleUrl(version, runnerOS);
         }
 
         core.debug(`downloading: ${url}`);
@@ -47,10 +47,10 @@ export class Installer {
         }
     }
 
-    static async getOcBundleUrl(version: string, runnerOS: string): Promise<string> {
+    static getOcBundleUrl(version: string, runnerOS: string): string {
         let url = '';
         if (version === 'latest') {
-            url = await Installer.latest(runnerOS);
+            url = Installer.latest(runnerOS);
             return url;
         }
 
@@ -63,7 +63,7 @@ export class Installer {
         }
         const vMajor: number = +vMajorRegEx[0];
 
-        const ocUtils = await Installer.getOcUtils();
+        const ocUtils = Installer.getOcUtils();
         if (vMajor === 3) {
             url = `${ocUtils.openshiftV3BaseUrl}/${version}/`;
         } else if (vMajor === 4) {
@@ -73,7 +73,7 @@ export class Installer {
             return null;
         }
 
-        const bundle = await Installer.getOcBundleByOS(runnerOS);
+        const bundle = Installer.getOcBundleByOS(runnerOS);
         if (!bundle) {
             core.debug('Unable to find bundle url');
             return null;
@@ -85,21 +85,21 @@ export class Installer {
         return url;
     }
 
-    static async latest(runnerOS: string): Promise<string> {
-        const bundle = await Installer.getOcBundleByOS(runnerOS);
+    static latest(runnerOS: string): string {
+        const bundle = Installer.getOcBundleByOS(runnerOS);
         if (!bundle) {
             core.debug('Unable to find bundle url');
             return null;
         }
 
-        const ocUtils = await Installer.getOcUtils();
+        const ocUtils = Installer.getOcUtils();
         const url = `${ocUtils.openshiftV4BaseUrl}/${LATEST}/${bundle}`;
 
         core.debug(`latest stable oc version: ${url}`);
         return url;
     }
 
-    static async getOcBundleByOS(runnerOS: string): Promise<string | null> {
+    static getOcBundleByOS(runnerOS: string): string | null {
         let url = '';
         // determine the bundle path based on the OS type
         switch (runnerOS) {
@@ -122,9 +122,10 @@ export class Installer {
         return url;
     }
 
-    static async getOcUtils(): Promise<{ [key: string]: string }> {
-        const workspace = process.env['GITHUB_WORKSPACE'] || '';
-        const rawData = await fs.readFile(path.join(workspace, 'oc-utils.json'));
-        return JSON.parse(rawData);
+    static getOcUtils(): { [key: string]: string } {
+        return {
+            "openshiftV3BaseUrl": "https://mirror.openshift.com/pub/openshift-v3/clients",
+            "openshiftV4BaseUrl": "https://mirror.openshift.com/pub/openshift-v4/clients/oc"
+        };
     }
 }
