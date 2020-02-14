@@ -77,7 +77,7 @@ export class OcAuth {
         // authKubeConfig(endpoint.parameters['kubeconfig'], runnerOS);
         break;
       default:
-        throw new Error(`unknown authentication type '${authType}'`);
+        return Promise.reject(new Error(`unknown authentication type '${authType}'`));
     }
   }
 
