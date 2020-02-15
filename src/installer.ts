@@ -16,7 +16,7 @@ import {
 import { Command } from './command';
 
 export class Installer {
-  static async installOc(version: string, runnerOS: string, useLocalOc: boolean): Promise<string> {
+  static async installOc(version: string, runnerOS: string, useLocalOc?: boolean): Promise<string> {
     if (useLocalOc) {
       const localOcPath = await Installer.getLocalOcPath(version);
       if (localOcPath) {
