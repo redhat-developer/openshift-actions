@@ -175,7 +175,7 @@ export class Installer {
 
     let exitCode: number = await Command.execute(
       ocPath,
-      'version --short=true --client=true',
+      'version --client=true',
       options
     );
 
