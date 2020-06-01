@@ -72,7 +72,7 @@ export class Installer {
     }
     fs.chmodSync(ocBinary, '0755');
     if (versionToCache) {
-      await tc.cacheFile(downloadDir, path.parse(ocBinary).base, 'oc', versionToCache);
+      await tc.cacheFile(ocBinary, path.parse(ocBinary).base, 'oc', versionToCache);
     }
     return { found: true, path: ocBinary };
   }
