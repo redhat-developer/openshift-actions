@@ -33,12 +33,9 @@ export class Installer {
     let versionToCache: string;
     if (versionToUse.type === 'number') {
       versionToCache = Installer.versionToCache(versionToUse.value);
-      if (!versionToCache) {
-        return { found: false, reason: 'Error while retrieving oc version to download.' };
-      }
-      const toolCached = tc.find('oc', versionToCache);
-      if (toolCached) {
-        return { found: true, path: toolCached };
+      const toolCached: FindBinaryStatus = Installer.versionInCache(versionToCache, runnerOS);
+      if (toolCached.found) {
+        return toolCached;
       }
     }
 
@@ -59,14 +56,14 @@ export class Installer {
 
     let downloadDir = '';
     const pathOcArchive = await tc.downloadTool(url);
-    let ocBinary: string;
     if (runnerOS === 'Windows') {
       downloadDir = await tc.extractZip(pathOcArchive);
-      ocBinary = path.join(downloadDir, 'oc.exe');
     } else {
       downloadDir = await tc.extractTar(pathOcArchive);
-      ocBinary = path.join(downloadDir, 'oc');
     }
+
+    let ocBinary: string = Installer.ocBinaryByOS(runnerOS);
+    ocBinary = path.join(downloadDir, ocBinary);
     if (!await ioUtil.exists(ocBinary)) {
       return { found: false, reason: `An error occurred while downloading and extracting oc binary from ${url}.` };
     }
@@ -234,5 +231,27 @@ export class Installer {
     const sanitizedVersion: semver.SemVer = semver.coerce(version);
     if (!sanitizedVersion) return undefined;
     return sanitizedVersion.version;
+  }
+
+  /**
+   * Retrieve the version of oc CLI in cache
+   *
+   * @param version version to search in cache
+   * @param runnerOS the OS type. One of 'Linux', 'Darwin' or 'Windows_NT'.
+   */
+  static versionInCache(version: string, runnerOS: string): FindBinaryStatus {
+    let cachePath: string;
+    if (version) {
+      cachePath = tc.find('oc', version);
+      if (cachePath) {
+        return { found: true, path: path.join(cachePath, Installer.ocBinaryByOS(runnerOS)) };
+      }
+    }
+    return { found: false };
+  }
+
+  private static ocBinaryByOS(osType: string): string {
+    if (osType.includes('Windows')) return 'oc.exe';
+    return 'oc';
   }
 }
