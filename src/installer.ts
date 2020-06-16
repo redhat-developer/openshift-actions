@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as core from '@actions/core';
 import * as fs from 'mz/fs';
+import * as glob from 'glob';
 import * as io from '@actions/io/lib/io';
 import * as ioUtil from '@actions/io/lib/io-util';
 import * as path from 'path';
@@ -63,9 +64,9 @@ export class Installer {
     }
 
     let ocBinary: string = Installer.ocBinaryByOS(runnerOS);
-    ocBinary = path.join(downloadDir, ocBinary);
+    ocBinary = await Installer.findOcFile(downloadDir, ocBinary);
     if (!await ioUtil.exists(ocBinary)) {
-      return { found: false, reason: `An error occurred while downloading and extracting oc binary from ${url}.` };
+      return { found: false, reason: `An error occurred while downloading and extracting oc binary from ${url}. File ${ocBinary} not found.` };
     }
     fs.chmodSync(ocBinary, '0755');
     if (versionToCache) {
@@ -273,5 +274,17 @@ export class Installer {
       dir = ocPath.substr(0, ocPath.lastIndexOf('/'));
     }
     core.addPath(dir);
+  }
+
+  static async findOcFile(folder, file): Promise<string> {
+    return new Promise((resolve, reject) => {
+      glob(`${folder}/**/${file}`, (err, res) => {
+        if (err) {
+          reject(new Error(`Unable to find oc exewcutable inside the directory ${folder}`));
+        } else {
+          resolve(res[0]);
+        }
+      });
+    });
   }
 }
