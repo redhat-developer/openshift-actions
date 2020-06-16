@@ -262,13 +262,13 @@ export class Installer {
    * @param osType the OS type. One of 'Linux', 'Darwin' or 'Windows_NT'.
    */
   static addOcToPath(ocPath: string, osType: string): void {
-    if (ocPath === null || ocPath === '') {
+    if (!ocPath) {
       core.debug('Unable to add null or empty Oc path to the PATH.');
       return;
     }
     let dir = '';
     if (osType.includes('Windows')) {
-      dir = ocPath.substr(0, ocPath.lastIndexOf('\\'));      
+      dir = ocPath.substr(0, ocPath.lastIndexOf('\\'));
     } else {
       dir = ocPath.substr(0, ocPath.lastIndexOf('/'));
     }
