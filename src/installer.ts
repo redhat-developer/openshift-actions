@@ -254,4 +254,24 @@ export class Installer {
     if (osType.includes('Windows')) return 'oc.exe';
     return 'oc';
   }
+
+  /**
+   * Adds oc to the PATH environment variable.
+   *
+   * @param ocPath the full path to the oc binary. Must be a non null.
+   * @param osType the OS type. One of 'Linux', 'Darwin' or 'Windows_NT'.
+   */
+  static addOcToPath(ocPath: string, osType: string): void {
+    if (ocPath === null || ocPath === '') {
+      core.debug('Unable to add null or empty Oc path to the PATH.');
+      return;
+    }
+    let dir = '';
+    if (osType.includes('Windows')) {
+      dir = ocPath.substr(0, ocPath.lastIndexOf('\\'));      
+    } else {
+      dir = ocPath.substr(0, ocPath.lastIndexOf('/'));
+    }
+    core.addPath(dir);
+  }
 }
