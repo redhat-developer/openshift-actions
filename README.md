@@ -1,6 +1,12 @@
+## This repository has been moved
+
+`openshift-actions` has been moved to the [`redhat-actions`](https://github.com/redhat-actions) org, and repurposed as [`oc-installer`](https://github.com/redhat-actions/oc-installer).
+
+This repository remains to prevent breaking existing workflows, but will no longer be maintained.
+
 # Openshift Extension for GitHub Actions
 
-The OpenShift Extension for GitHub Actions gives you the ability to create workflows to automate the deployment process to [OpenShift](https://github.com/openshift/origin) 
+The OpenShift Extension for GitHub Actions gives you the ability to create workflows to automate the deployment process to [OpenShift](https://github.com/openshift/origin)
 
 ## Inputs:
 
@@ -18,7 +24,7 @@ To configure an OpenShift connection you need to feed in the extension with some
 
 #### Basic Authentication
 
-It uses username and password to connect to the cluster. 
+It uses username and password to connect to the cluster.
 
 | Name                  | Requirement | Description |
 | --------------------- | ----------- | ----------- |
@@ -31,7 +37,7 @@ The parameters input must be in form `parameters: '{"username": "${{ secrets.USE
 
 #### Token Authentication
 
-It uses an API token to connect to the cluster. 
+It uses an API token to connect to the cluster.
 
 | Name                  | Requirement | Description |
 | --------------------- | ----------- | ----------- |
@@ -91,7 +97,7 @@ steps:
         version: '3.11.90'
         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
         parameters: '{"apitoken": "${{ secrets.API_TOKEN }}", "acceptUntrustedCerts": "true"}'
-        cmd: |          
+        cmd: |
           'get pods'
           'new-project name'
 ```
@@ -115,7 +121,7 @@ jobs:
         version: 'latest'
         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
         parameters: '{"apitoken": "${{ secrets.API_TOKEN }}", "acceptUntrustedCerts": "true"}'
-        cmd: |          
+        cmd: |
           'version'
           'new-project ${PROJECT}'
 ```
@@ -148,7 +154,7 @@ jobs:
         version: 'latest'
         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
         parameters: '{"apitoken": "${{ secrets.API_TOKEN }}", "acceptUntrustedCerts": "true"}'
-        cmd: |          
+        cmd: |
           'version'
           'new-project my-project'
 ```
@@ -158,7 +164,7 @@ jobs:
 
 OpenShift Action supports `oc` executable caching based on it's version to avoid downloading the same executable over and over when running different pipelines.
 
-The cache is only enabled when the version is in number format and clearly specified in the task (e.g 4.1, 3.1.28..). If the version will be defined as an URL or using the latest label (when wanting to use the latest oc version available), the extension will try to download the oc version requested without checking the cache. 
+The cache is only enabled when the version is in number format and clearly specified in the task (e.g 4.1, 3.1.28..). If the version will be defined as an URL or using the latest label (when wanting to use the latest oc version available), the extension will try to download the oc version requested without checking the cache.
 
 The oc executable will be cached inside the `_work/_tool/oc` folder.
 
