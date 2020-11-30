@@ -1,4 +1,4 @@
-## This repository has been moved
+## ⚠ ️This repository has been moved ⚠
 
 `openshift-actions` has been moved to the [`redhat-actions`](https://github.com/redhat-actions) org, and repurposed as [`oc-installer`](https://github.com/redhat-actions/oc-installer).
 
